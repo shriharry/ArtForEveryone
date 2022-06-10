@@ -60,8 +60,10 @@ It's multi user drawing application (Art for everyone). User can create account 
   - index.js - (It's main file which import all above configurations and then configures it while creating express server)
 
 # Trade offs
-- User can share the URL with whoever they want. (Just realized that I have missed this point; but it's definitely possible and can be worked.)
+- Missing feature - User can share the URL with whoever they want. (Just realized that I have missed this point; but it's definitely possible and can be worked.)
 - Missing Unit tests (I would like to have unit tests to ensure that there is good amount of good coverage.)
+- More features (Record Drawing, More brushes) are missing.
+- Could have been better in mobiles.
 
 # Usage
 
