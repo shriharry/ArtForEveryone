@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   deleteDrawing,
@@ -119,7 +120,7 @@ export default function List() {
     dispatch(deleteDrawing({ drawingId }));
     dispatch({ type: FETCH_DRAWINGS_ACTION });
   };
-  const rows = prepareRows(response, deleteById);
+ const rows = prepareRows(response, deleteById);
 
   const getRowSpan = (details) =>
     details.reduce((previousValue, currentValue, currentIndex) => {
@@ -161,6 +162,13 @@ export default function List() {
               )}
             </Fragment>
           ))}
+          {
+              !rows?.length && (
+              <tr>
+                <td style={{ width: "40%" }} colSpan={2}>No drawings to show. <Link to="/create">Click here</Link> to create yours...</td>
+              </tr>
+            )
+          }
         </tbody>
       </table>
     </div>
