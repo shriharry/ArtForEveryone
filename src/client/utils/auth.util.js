@@ -1,3 +1,5 @@
+export const getAPIURI = process.env.API_URI || 'http://localhost:8080';
+
 export const signOut = () => {
   localStorage.removeItem("user");
 };

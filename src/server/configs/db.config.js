@@ -5,9 +5,9 @@ module.exports = {
   DB: process.env.DB_NAME || "drawings",
   dialect: process.env.DB_DIALECT || "postgres",
   pool: {
-    max: parseInt(process.env.DB_POOL_MAX),
-    min: parseInt(process.env.DB_POOL_MIN),
-    acquire: parseInt(process.env.DB_ACQUIRE),
-    idle: parseInt(process.env.DB_IDLE),
+    max: parseInt(process.env.DB_POOL_MAX || 5),
+    min: parseInt(process.env.DB_POOL_MIN || 0),
+    acquire: parseInt(process.env.DB_ACQUIRE || 30000),
+    idle: parseInt(process.env.DB_IDLE || 10000),
   },
 };

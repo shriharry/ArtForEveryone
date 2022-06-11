@@ -1,7 +1,7 @@
 import axios from "axios";
-import { authHeader } from "../../../utils/auth.util";
+import { authHeader, getAPIURI } from "../../../utils/auth.util";
 
-const drawingAPI = process.env.API_URL + "/api/drawing";
+const drawingAPI = `${getAPIURI}/api/drawing`;
 
 export function getAllDrawings() {
   return axios.request({

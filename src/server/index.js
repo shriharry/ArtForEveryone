@@ -13,7 +13,7 @@ const db = require("@src/models");
 
 const server = express();
 const corsOptions = {
-  origin: process.env.WEB_URL || "http://localhost:3000",
+  origin: process.env.WEB_URI || "http://localhost:3000",
   credentials: true,
   optionSuccessStatus: 200,
 };
@@ -25,9 +25,9 @@ server.use(logError);
 server.use(returnError);
 server.use(logErrorMiddleware);
 
-const PORT = process.env.PORT || 8080;
-server.listen(PORT, () => {
-  logger.info(`Server is running on port ${PORT}.`);
+const port = process.env.API_PORT || 8080;
+server.listen(port, () => {
+  logger.info(`Server is running on port ${port}.`);
 });
 
 db.sequelize
