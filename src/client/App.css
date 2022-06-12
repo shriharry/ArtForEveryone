@@ -51,6 +51,7 @@ label {
 table {
   width: 100%;
   border: 1px solid #ddd;
+  margin-bottom: 50px;
 }
 
 th,
@@ -98,6 +99,11 @@ div.content {
 .disable-button {
   background-color: #dddddd;
   color: #9d9696 !important;
+}
+
+.canvas-paper {
+  border: 1px solid black;
+  cursor: pointer
 }
 
 @media screen and (max-width: 700px) {

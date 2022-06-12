@@ -174,11 +174,19 @@ export default function Drawings() {
     dispatch(saveDrawing({ drawingData, timeTaken, status, userId }));
   };
 
+  const clearAll = () => {
+    canvasContext.clearRect(0, 0, canvas.current.width, canvas.current.height);
+    setReadyForSave(false);
+  }
+
   const getClassNameForPen = mode === "pen" ? `active` : ``;
   const getClassNameForEraser = mode === "eraser" ? `active` : ``;
   const disableColorAndSizePicker = mode === "eraser" ? true : false;
 
   const getDisableClassName = !isReadForSave ? "disable-button" : "";
+  
+  const getDisableClassNameForSavePublic = !isReadForSave ? "disable-button" : "text-success";
+  const getDisableClassNameForSavePrivate = !isReadForSave ? "disable-button" : "text-danger";
 
   const getDisableClassNameForColorAndSize =
     mode === "eraser" ? "disable-button" : "";
@@ -225,14 +233,19 @@ export default function Drawings() {
             Size: {stroke}
           </span>
         </a>
-        <a className={getDisableClassName} onClick={() => saveAsImage(PUBLIC)}>
+        <a className={getDisableClassNameForSavePublic} onClick={() => saveAsImage(PRIVATE)}>
           <span style={{ fontSize: 18 }}>
-            Save as <i className="bi bi-eye-fill"></i>
+            Save as <span className="">Public</span> <i className="bi bi-eye-slash-fill"></i>
           </span>
         </a>
-        <a className={getDisableClassName} onClick={() => saveAsImage(PRIVATE)}>
+        <a className={getDisableClassNameForSavePrivate} onClick={() => saveAsImage(PUBLIC)}>
           <span style={{ fontSize: 18 }}>
-            Save as <i className="bi bi-eye-slash-fill"></i>
+            Save as <span>Private</span> <i className="bi bi-eye-fill"></i>
+          </span>
+        </a>
+        <a className={getDisableClassName} onClick={() => clearAll()}>
+          <span style={{ fontSize: 18 }}>
+           Reset <i className="bi bi-bootstrap-reboot"></i>
           </span>
         </a>
       </div>
@@ -245,7 +258,7 @@ export default function Drawings() {
                 id="canvas"
                 width="850"
                 height="650"
-                style={{ border: "1px solid black" }}
+                className="canvas-paper"
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
