@@ -1,11 +1,11 @@
 # Overview
-It's multi user drawing application (Art for everyone). User can create account and login into application. After login, User can see all publicly available drawings drawn by other users. Logged in user can also create drawing on canvas using given brush of different size and colors; they can also erase and save their drawing. User can save drawings as Public or they can also save it as Private mode. Privately created drawings will not be visible to other users in drawing list but current user can see his public/privates drawings and other users public drawing. User can also delete drawings which belongs to him/her only.
+It's multi user drawing application (Art for everyone). User can create account and login into application. After login, User can see all publicly available drawings drawn by other users. Logged in user can also create drawing on canvas using given brush of different size and colors; they can also erase and save their drawing. User can save drawings as Public or they can also save it as Private mode. Privately created drawings will not be visible to other users in drawing list but current user can see own public/privates drawings and other users only public drawings. User can also delete drawings which belongs to him/her only.
 
 
 # Architecture
 
-- This is repo serves serves both front-end and backend.
-- Front End is designed and developed using React, @reduxjs/toolkit and saga.
+- This repo serves both front-end and back-end.
+- Front End is designed and developed using React, @reduxjs/toolkit and saga. I have included Webpack for bundling purpose and also babel for transpiling purpose.
 - Back End is designed and developed with NodeJS(express framework) with postgresql as database and Sequelize as ORM.
 - Below is top level view of both FrontEnd and BackEnd folder structures
 
@@ -61,9 +61,10 @@ It's multi user drawing application (Art for everyone). User can create account 
 
 # Trade offs
 - Missing feature - User can share the URL with whoever they want. (Just realized that I have missed this point; but it's definitely possible and can be worked.)
-- Missing Unit tests (I would like to have unit tests to ensure that there is good amount of good coverage.)
+- Missing Unit tests (I would like to have unit tests to ensure that there is good amount of code coverage.)
 - More features (Record Drawing, More brushes) are missing.
-- Could have been better in mobiles.
+- Pagination is missing in drawing list.
+- Could have been better in responsive/mobiles.
 
 # Usage
 
@@ -72,5 +73,3 @@ It's multi user drawing application (Art for everyone). User can create account 
 - Do `npm install`
 - And then `npm run start-drawing`
 - Keep drawing :slightly_smiling_face:
-
-
