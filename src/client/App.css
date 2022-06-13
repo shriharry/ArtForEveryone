@@ -101,6 +101,18 @@ div.content {
   color: #9d9696 !important;
 }
 
+.disable-icon {
+  color: #9d9696;
+}
+
+.size-18 {
+  font-size: 18px;
+}
+
+.size-25{
+  font-size: 25px;
+}
+
 .canvas-paper {
   border: 1px solid black;
   cursor: pointer

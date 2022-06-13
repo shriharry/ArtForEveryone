@@ -1,5 +1,5 @@
 # Overview
-It's multi user drawing application (Art for everyone). User can create account and login into application. After login, User can see all publicly available drawings drawn by other users. Logged in user can also create drawing on canvas using given brush of different size and colors; they can also erase and save their drawing. User can save drawings as Public or they can also save it as Private mode. Privately created drawings will not be visible to other users in drawing list but current user can see own public/privates drawings and other users only public drawings. User can also delete drawings which belongs to him/her only.
+It's multi user drawing application (Art for everyone). User can create account and login into application. After login, User can see all publicly available drawings drawn by other users. Logged in user can also create drawing on canvas using given brush of different size and colors; they can also erase and save their drawing. User can also record and play own drawing. User can save drawings as Public or they can also save it as Private. Privately saved drawings will not be visible to other users in drawing list but current user can see own public/privates drawings and other users only public drawings. User can also delete drawings which belongs to him/her only. 
 
 
 # Architecture
@@ -62,7 +62,7 @@ It's multi user drawing application (Art for everyone). User can create account 
 # Trade offs
 - Missing feature - User can share the URL with whoever they want. (Just realized that I have missed this point; but it's definitely possible and can be worked.)
 - Missing Unit tests (I would like to have unit tests to ensure that there is good amount of code coverage.)
-- More features (Record Drawing, More brushes) are missing.
+- More features (allow other users to play recorded drawings, More brushes) are missing.
 - Pagination is missing in drawing list.
 - Could have been better in responsive/mobiles.
 

@@ -12,14 +12,9 @@ import {
 } from "./../stores/selectors/drawing.selector";
 import { userIdSelector } from "../stores/selectors/auth.selector";
 import { PRIVATE } from "../utils/constants";
+import { dateOptions } from "../utils/helper";
 
 const prepareRows = (response, deleteById) => {
-  const options = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
   const currentUserId = useSelector(userIdSelector);
 
   return response?.map((data) => {
@@ -74,7 +69,7 @@ const prepareRows = (response, deleteById) => {
         {
           "Created on: ": new Date(data.createdAt).toLocaleDateString(
             "en-US",
-            options
+            dateOptions
           ),
         },
         { "": deleteButton },

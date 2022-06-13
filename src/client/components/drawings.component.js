@@ -5,10 +5,12 @@ import { saveDrawing } from "../stores/sagas/actions/drawing.action";
 import { isDrawingSavedSelector } from "../stores/selectors/drawing.selector";
 import { useNavigate } from "react-router-dom";
 import { userIdSelector } from "../stores/selectors/auth.selector";
-import { PRIVATE, PUBLIC } from "../utils/constants";
+import { PRIVATE, PUBLIC, RECORDING_PENDING, RECORDING_PLAYING, RECORDING_STARTED, RECORDING_STOPPED } from "../utils/constants";
+import { calculateTimeTaken, draw, prepareToaster, slowdown } from "../utils/helper";
 
 export default function Drawings() {
   const canvas = useRef(null);
+  const recordings = useRef([]);
 
   const [canvasContext, setCanvasContext] = useState(null);
   const [mode, setMode] = useState("pen");
@@ -25,6 +27,7 @@ export default function Drawings() {
   const [lastY, setLastY] = useState(0);
 
   const [isReadForSave, setReadyForSave] = useState(false);
+  const [recordingStatus, setRecordingStatus ] = useState(RECORDING_PENDING);
 
   const [] = useState();
 
@@ -39,26 +42,10 @@ export default function Drawings() {
   const isDrawingSaved = useSelector(isDrawingSavedSelector);
   useEffect(() => {
     if (isDrawingSaved) {
-      toast.success("Drawing is saved successfully.", {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-      });
+      toast.success("Drawing is saved successfully.", prepareToaster);
       navigate("/list", { replace: true });
     } else if (isDrawingSaved === false) {
-      toast.error("Something went wrong while saving..; please try again", {
-        position: "bottom-right",
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: false,
-        progress: undefined,
-      });
+      toast.error("Something went wrong while saving..; please try again", prepareToaster);
     }
   }, [isDrawingSaved]);
 
@@ -77,8 +64,6 @@ export default function Drawings() {
       setMouseX(parseInt(e.clientX - offsetLeft));
       setMouseY(parseInt(e.clientY - offsetTop));
     }
-
-    // Put your mousedown stuff here
     setLastX(mouseX);
     setLastY(mouseY);
 
@@ -94,7 +79,6 @@ export default function Drawings() {
       setMouseY(parseInt(e.clientY - offsetTop));
     }
 
-    // Put your mouseup stuff here
     SetMouseDown(false);
   };
 
@@ -107,7 +91,6 @@ export default function Drawings() {
       setMouseY(parseInt(e.clientY - offsetTop));
     }
 
-    // Put your mouseOut stuff here
     SetMouseDown(false);
   };
 
@@ -120,20 +103,17 @@ export default function Drawings() {
       setMouseY(parseInt(e.clientY - offsetTop));
     }
 
-    // Put your mousemove stuff here
     if (isMouseDown) {
       const ctx = canvasContext;
       ctx.beginPath();
-      if (mode == "pen") {
-        ctx.globalCompositeOperation = "source-over";
-        ctx.moveTo(lastX, lastY);
-        ctx.lineTo(mouseX, mouseY);
-        ctx.strokeStyle = color;
-        ctx.lineWidth = stroke;
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        ctx.stroke();
+      if (mode === "pen") {
+        const strokeInfo = {moveTo: {lastX, lastY}, lineTo: {mouseX, mouseY}, color, stroke };
+        draw(ctx, strokeInfo);
         setReadyForSave(true);
+
+        if(recordingStatus === RECORDING_STARTED) {
+          recordings.current.push(strokeInfo);
+        }
       } else {
         ctx.globalCompositeOperation = "destination-out";
         ctx.rect(lastX, lastY, 30, 30);
@@ -143,25 +123,6 @@ export default function Drawings() {
       setLastY(mouseY);
     }
   };
-
-  function calculateTimeTaken(milliseconds) {
-    let seconds = Math.floor(milliseconds / 1000);
-    let minutes = Math.floor(seconds / 60);
-    let hours = Math.floor(minutes / 60);
-
-    seconds = seconds % 60;
-    minutes = minutes % 60;
-
-    if (hours !== 0) {
-      return hours + " hours " + minutes + " minutes " + seconds + " seconds";
-    } else if (minutes !== 0) {
-      return minutes + " minutes " + seconds + " seconds";
-    } else if (seconds !== 0) {
-      return seconds + " seconds";
-    } else {
-      return milliseconds + " milliseconds";
-    }
-  }
 
   const saveAsImage = (status) => {
     if (!isReadForSave) {
@@ -179,32 +140,58 @@ export default function Drawings() {
     setReadyForSave(false);
   }
 
+  const playRecording = async() => {
+    setRecordingStatus(RECORDING_PLAYING)
+    canvasContext.clearRect(0, 0, canvas.current.width, canvas.current.height);
+    const ctx = canvasContext;
+
+    for (let i = 0; i < recordings.current.length; i++) {
+      await slowdown(75);
+      ctx.beginPath(); 
+      draw(ctx, recordings.current[i]);
+      if(i === recordings.current.length-1) {
+        setRecordingStatus(RECORDING_STOPPED)
+      }
+    };
+  }
+
+  const resetRecording = () => {
+    recordings.current = [];
+    setRecordingStatus(RECORDING_PENDING);
+    clearAll();
+  }
+
+  // For tool buttons
+  const disableColorAndSizePicker = mode === "eraser" ? true : false;
   const getClassNameForPen = mode === "pen" ? `active` : ``;
   const getClassNameForEraser = mode === "eraser" ? `active` : ``;
-  const disableColorAndSizePicker = mode === "eraser" ? true : false;
-
   const getDisableClassName = !isReadForSave ? "disable-button" : "";
-  
   const getDisableClassNameForSavePublic = !isReadForSave ? "disable-button" : "text-success";
   const getDisableClassNameForSavePrivate = !isReadForSave ? "disable-button" : "text-danger";
-
   const getDisableClassNameForColorAndSize =
-    mode === "eraser" ? "disable-button" : "";
+  mode === "eraser" ? "disable-button" : "";
+ 
+  // For recording buttons
+  const getClassNameForRecord = (recordingStatus=== RECORDING_PENDING) ? "text-danger" : "disable-icon";
+  const getClassNameForStop = [RECORDING_PENDING, RECORDING_STOPPED, RECORDING_PLAYING].includes(recordingStatus) ? "disable-icon" : "text-danger";
+  const getClassNameForPlay = [RECORDING_PENDING, RECORDING_STARTED, RECORDING_PLAYING].includes(recordingStatus) ? "disable-icon" : "text-danger";
+  const getClassNameForReset = [RECORDING_PENDING, RECORDING_STARTED].includes(recordingStatus)? "disable-icon" : "text-danger";
+  
   return (
     <>
       <div className="sidebar">
-        <a onClick={() => setMode("pen")} className={getClassNameForPen}>
-          <span style={{ fontSize: 18 }}>
+        <a onClick={() => setMode("pen")} className={`size-18 `+getClassNameForPen}>
+          <span>
             Brush <i className="bi bi-brush-fill"></i>
           </span>
         </a>
-        <a onClick={() => setMode("eraser")} className={getClassNameForEraser}>
-          <span style={{ fontSize: 18 }}>
+        <a onClick={() => setMode("eraser")} className={`size-18 `+getClassNameForEraser}>
+          <span>
             Eraser <i className="bi bi-eraser-fill"></i>
           </span>
         </a>
-        <a className={getDisableClassNameForColorAndSize}>
-          <span style={{ fontSize: 18 }}>
+        <a className={`size-18 `+getDisableClassNameForColorAndSize}>
+          <span>
             Color{" "}
             <input
               disabled={disableColorAndSizePicker}
@@ -217,8 +204,8 @@ export default function Drawings() {
             ></input>
           </span>
         </a>
-        <a className={getDisableClassNameForColorAndSize}>
-          <span style={{ fontSize: 18 }}>
+        <a className={`size-18 `+getDisableClassNameForColorAndSize}>
+          <span>
             <input
               disabled={disableColorAndSizePicker}
               type="range"
@@ -233,20 +220,25 @@ export default function Drawings() {
             Size: {stroke}
           </span>
         </a>
-        <a className={getDisableClassNameForSavePublic} onClick={() => saveAsImage(PRIVATE)}>
-          <span style={{ fontSize: 18 }}>
+        <a className={`size-18 `+getDisableClassNameForSavePublic} onClick={() => saveAsImage(PUBLIC)}>
+          <span>
             Save as <span className="">Public</span> <i className="bi bi-eye-slash-fill"></i>
           </span>
         </a>
-        <a className={getDisableClassNameForSavePrivate} onClick={() => saveAsImage(PUBLIC)}>
-          <span style={{ fontSize: 18 }}>
+        <a className={`size-18 ` +getDisableClassNameForSavePrivate} onClick={() => saveAsImage(PRIVATE)}>
+          <span>
             Save as <span>Private</span> <i className="bi bi-eye-fill"></i>
           </span>
         </a>
-        <a className={getDisableClassName} onClick={() => clearAll()}>
-          <span style={{ fontSize: 18 }}>
+        <a className={`size-18 `+getDisableClassName} onClick={() => clearAll()}>
+          <span>
            Reset <i className="bi bi-bootstrap-reboot"></i>
           </span>
+        </a>
+        <a className={getDisableClassName}>
+          <span >
+           <i title="Start Recording"  className={`bi bi-record-btn size-25 `+ getClassNameForRecord} onClick={() => setRecordingStatus(RECORDING_STARTED)}></i>  <i title="Stop Recording" className={`bi bi-stop-btn size-25 `+ getClassNameForStop}  onClick={() => setRecordingStatus(RECORDING_STOPPED)}></i>  <i title="Play Recording" className={`bi bi-play-btn size-25 `+ getClassNameForPlay} onClick={() => playRecording()}></i>  <i title="Reset Recording"  className={`bi bi-bootstrap-reboot size-25 `+ getClassNameForReset} onClick={() => resetRecording()}></i>
+           </span>
         </a>
       </div>
       <div className="content">
