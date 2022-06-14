@@ -64,7 +64,6 @@ It's multi user drawing application (Art for everyone). User can create account 
 - Missing Unit tests (I would like to have unit tests to ensure that there is good amount of code coverage.)
 - More features (allow other users to play recorded drawings, More brushes) are missing.
 - Pagination is missing in drawing list.
-- Could have been better in responsive/mobiles.
 
 # Usage
 
